@@ -1,0 +1,27 @@
+{
+  "name": "Anam Barbershop",
+  "short_name": "ANAM.",
+  "description": "Booking cukur online & katalog produk Anam Barbershop Boyolali",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#000000",
+  "theme_color": "#e8b15e",
+  "lang": "id-ID",
+  "categories": ["lifestyle", "business"],
+  "icons": [
+    {
+      "src": "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 192 192'><rect width='192' height='192' rx='32' fill='%23000'/><circle cx='96' cy='96' r='62' fill='none' stroke='%23e8b15e' stroke-width='6'/><text x='96' y='116' text-anchor='middle' font-family='Georgia,serif' font-size='70' font-weight='700' fill='%23e8b15e'>A</text></svg>",
+      "sizes": "192x192",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'><rect width='512' height='512' rx='86' fill='%23000'/><circle cx='256' cy='256' r='166' fill='none' stroke='%23e8b15e' stroke-width='16'/><text x='256' y='310' text-anchor='middle' font-family='Georgia,serif' font-size='190' font-weight='700' fill='%23e8b15e'>A</text></svg>",
+      "sizes": "512x512",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
