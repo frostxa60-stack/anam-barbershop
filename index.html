@@ -226,6 +226,45 @@ body.anim .reveal.in{opacity:1;transform:none}
   .add-form .full{grid-column:span 1}
 }
 @media(max-width:480px){.prod-grid,.gal-grid{grid-template-columns:1fr}.hero-meta{gap:26px}}
+
+/* LIVE BOOKING */
+.live-booking{background:var(--bg-elev);border:1px solid var(--ring);border-radius:var(--r-lg);padding:36px;display:grid;grid-template-columns:1.4fr 1fr;gap:36px;margin-top:40px}
+.live-date{display:flex;align-items:center;gap:16px;flex-wrap:wrap;margin-bottom:22px}
+.live-date label{font-size:12px;color:var(--text-2);font-family:'Azeret Mono',monospace;text-transform:uppercase;letter-spacing:.08em}
+.live-date input{background:var(--frost-2);border:1px solid var(--frost);border-radius:var(--r-sm);padding:10px 12px;color:#fff;font-family:inherit;font-size:15px}
+.live-date input:focus{outline:none;border-color:var(--accent)}
+.live-count{margin-left:auto;font-size:13px;color:var(--text-2)}
+.live-count b{color:var(--accent);font-size:18px;font-family:'Oswald',sans-serif}
+.slot-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.slot{display:flex;flex-direction:column;align-items:center;gap:3px;background:var(--frost-2);border:1px solid var(--ring);border-radius:var(--r-md);padding:14px 8px;cursor:pointer;color:#fff;font-family:inherit;transition:transform .2s var(--ease),border-color .2s,background .2s}
+.slot .st{font-family:'Oswald',sans-serif;font-size:20px;font-weight:600;letter-spacing:.5px}
+.slot .ss{font-size:11px;color:var(--text-3);font-family:'Azeret Mono',monospace;text-transform:uppercase;letter-spacing:.06em}
+.slot.avail{border-color:rgba(34,197,94,.4)}
+.slot.avail .st{color:#22c55e}
+.slot.avail:hover{transform:translateY(-3px);background:rgba(34,197,94,.1);border-color:#22c55e}
+.slot.filled{cursor:not-allowed;opacity:.55;background:rgba(255,255,255,.03)}
+.slot.filled .st{color:var(--text-3)}
+.slot.past{cursor:not-allowed;opacity:.35}
+.slot.past .st{color:var(--text-3)}
+.live-legend{display:flex;gap:18px;margin-top:18px;font-size:12px;color:var(--text-3)}
+.live-legend .dot{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:6px;vertical-align:middle}
+.dot.avail{background:#22c55e}.dot.filled{background:var(--text-3)}.dot.past{background:#555}
+.live-right h3{font-size:22px;font-weight:600;margin-bottom:16px}
+.live-right h3 span{color:var(--text-3);font-size:14px;font-family:'Azeret Mono',monospace}
+.queue-list{display:flex;flex-direction:column;gap:10px;max-height:360px;overflow-y:auto}
+.queue-item{display:flex;align-items:center;gap:14px;background:var(--frost-2);border:1px solid var(--frost);border-radius:var(--r-md);padding:12px 16px}
+.queue-item.me{border-color:var(--accent);background:var(--accent-glow)}
+.queue-item .pos{font-family:'Oswald',sans-serif;font-size:18px;font-weight:600;color:var(--accent);min-width:30px}
+.queue-item .qt{font-family:'Oswald',sans-serif;font-size:18px;font-weight:600;letter-spacing:.5px;min-width:64px}
+.queue-item .qb{margin-left:auto;font-size:11px;font-family:'Azeret Mono',monospace;text-transform:uppercase;letter-spacing:.06em;padding:4px 10px;border-radius:var(--r-pill);border:1px solid var(--frost)}
+.qb-pending{color:#fbbf24;border-color:rgba(251,191,36,.4);background:rgba(251,191,36,.1)}
+.qb-confirmed{color:#22c55e;border-color:rgba(34,197,94,.4);background:rgba(34,197,94,.1)}
+.qb-done{color:var(--text-3)}
+.qb-cancelled{color:#ef4444;border-color:rgba(239,68,68,.4);background:rgba(239,68,68,.08)}
+.queue-item .qme{font-size:11px;color:#000;background:var(--accent);padding:3px 9px;border-radius:var(--r-pill);font-weight:600;font-family:'Azeret Mono',monospace}
+.queue-list .empty{color:var(--text-3);text-align:center;padding:30px 10px;font-size:14px}
+@media(max-width:760px){.live-booking{grid-template-columns:1fr;padding:24px}.slot-grid{grid-template-columns:repeat(3,1fr)}}
+
 </style>
 </head>
 <body>
@@ -323,6 +362,32 @@ body.anim .reveal.in{opacity:1;transform:none}
         <div class="field"><label>Catatan (opsional)</label><textarea id="bk_note" placeholder="Gaya yang diinginkan, dll."></textarea></div>
         <button type="submit" class="btn btn-primary" style="width:100%;padding:13px">Simpan Booking →</button>
       </form>
+    </div>
+  </section>
+
+  <!-- ===================== LIVE BOOKING ===================== -->
+  <section id="livebooking" class="wrap">
+    <div class="eyebrow reveal">Antrian Live</div>
+    <h2 class="title reveal">Slot kosong &amp; antrean.</h2>
+    <p class="lead reveal">Lihat jam yang masih kosong dan posisi antrean — update otomatis <b>realtime</b>. Klik slot kosong untuk langsung booking.</p>
+    <div class="live-booking reveal">
+      <div class="live-left">
+        <div class="live-date">
+          <label>Pilih tanggal</label>
+          <input type="date" id="lbDate">
+          <span class="live-count"><b id="lbAvail">&ndash;</b> slot kosong</span>
+        </div>
+        <div class="slot-grid" id="slotGrid"></div>
+        <div class="live-legend">
+          <span><i class="dot avail"></i> Kosong</span>
+          <span><i class="dot filled"></i> Terisi</span>
+          <span><i class="dot past"></i> Lewat</span>
+        </div>
+      </div>
+      <div class="live-right">
+        <h3>Antrean <span id="lbQueueDate"></span></h3>
+        <div class="queue-list" id="queueList"><p class="empty">Memuat&hellip;</p></div>
+      </div>
     </div>
   </section>
 
@@ -581,8 +646,9 @@ if(CONFIGURED){
     supabase.auth.onAuthStateChange((_e,s)=>{
       if(s&&s.user){currentUser=s.user;supabase.from('profiles').select('*').eq('id',currentUser.id).single().then(({data:p})=>{currentProfile=p;renderAuth();});}
       else{currentUser=null;currentProfile=null;renderAuth();}
+      refreshLive();
     });
-    loadProducts();
+    loadProducts(); setupRealtime();
   }
   if(initSupabase()){ startAuth(); }
   else {
@@ -607,8 +673,99 @@ document.getElementById('bookForm').addEventListener('submit',async e=>{
     service:document.getElementById('bk_svc').value,booking_date:document.getElementById('bk_date').value,
     booking_time:document.getElementById('bk_time').value,note:document.getElementById('bk_note').value,status:'pending'};
   const {error}=await supabase.from('bookings').insert(payload);
-  if(error){toast('Gagal: '+error.message);}else{toast('✓ Booking tersimpan! Kami akan konfirmasi.');document.getElementById('bookForm').reset();}
+  if(error){
+    if(error.code==='23505'||/bookings_booking_date_booking_time/.test(error.message))
+      toast('Maaf, slot itu baru saja diambil. Refresh & pilih jam lain.');
+    else toast('Gagal: '+error.message);
+    refreshLive();
+  }else{
+    toast('✓ Booking tersimpan! Kami akan konfirmasi.');
+    document.getElementById('bookForm').reset();
+    refreshLive();
+  }
 });
+
+/* ============================================================
+   LIVE BOOKING — slot kosong + antrean (realtime)
+   ============================================================ */
+const LB_HOURS=[9,10,11,12,13,14,15,16,17]; // 09:00 - 17:00
+const STATUS_BADGE={pending:'Menunggu',confirmed:'Dikonfirmasi',done:'Selesai',cancelled:'Batal'};
+let lbDate=null;
+
+function pad2(n){return (n<10?'0':'')+n;}
+function todayISO(){const d=new Date();return d.getFullYear()+'-'+pad2(d.getMonth()+1)+'-'+pad2(d.getDate());}
+function hhmmLabel(t){return (t&&t.length>=5)?t.slice(0,5):(t||'');}
+
+function initLiveBooking(){
+  const dateEl=document.getElementById('lbDate'); if(!dateEl) return;
+  dateEl.value=todayISO(); lbDate=dateEl.value; dateEl.min=todayISO();
+  dateEl.addEventListener('change',()=>{ lbDate=dateEl.value||todayISO(); refreshLive(); });
+  renderSlots(lbDate,{}); renderQueue([],[]);
+  refreshLive();
+  setInterval(refreshLive,8000); // polling = realtime tanpa setup
+}
+function setupRealtime(){
+  if(!SB_READY||!supabase||!supabase.channel) return;
+  try{ supabase.channel('public:bookings')
+        .on('postgres_changes',{event:'*',schema:'public',table:'bookings'},()=>refreshLive())
+        .subscribe();
+  }catch(e){/* polling tetap jalan */}
+}
+async function fetchPublicBookings(date){
+  if(!SB_READY||!supabase) return {taken:{},list:[]};
+  const {data,error}=await supabase.rpc('get_public_bookings',{p_date:date});
+  if(error){ console.warn('live fetch:',error.message); return {taken:{},list:[]}; }
+  const list=(data||[]).map(r=>({time:hhmmLabel(r.booking_time),status:r.status}));
+  const taken={}; list.forEach(b=>taken[b.time]=b.status);
+  return {taken,list};
+}
+async function fetchMyBookings(date){
+  if(!SB_READY||!supabase||!currentUser) return [];
+  const {data,error}=await supabase.from('bookings')
+    .select('booking_time,status').eq('user_id',currentUser.id).eq('booking_date',date);
+  if(error) return [];
+  return (data||[]).map(r=>({time:hhmmLabel(r.booking_time),status:r.status}));
+}
+async function refreshLive(){
+  if(!lbDate) return;
+  const {taken,list}=await fetchPublicBookings(lbDate);
+  const mine=await fetchMyBookings(lbDate);
+  renderSlots(lbDate,taken); renderQueue(list,mine);
+}
+function renderSlots(date,taken){
+  const grid=document.getElementById('slotGrid'); if(!grid) return;
+  const now=new Date(), isToday=(date===todayISO()), curH=now.getHours();
+  let avail=0;
+  grid.innerHTML=LB_HOURS.map(h=>{
+    const t=pad2(h)+':00', status=taken[t];
+    const isTaken=!!status, past=(isToday && h<curH);
+    let cls='avail', sub='Kosong';
+    if(isTaken){ cls='filled'; sub=STATUS_BADGE[status]||status; }
+    else if(past){ cls='past'; sub='Lewat'; }
+    else avail++;
+    return `<button type="button" class="slot ${cls}" data-time="${t}" ${isTaken||past?'disabled':''}><span class="st">${t}</span><span class="ss">${sub}</span></button>`;
+  }).join('');
+  grid.querySelectorAll('.slot').forEach(b=>{ if(b.disabled) return;
+    b.onclick=()=>{ const t=b.dataset.time;
+      document.getElementById('bk_date').value=date;
+      document.getElementById('bk_time').value=t;
+      if(!SB_READY){ toast('Koneksi belum siap.'); return; }
+      if(!currentUser){ openAuth('login'); toast('Masuk dulu untuk booking jam '+t+'.'); }
+      else { document.getElementById('booking').scrollIntoView({behavior:'smooth'}); toast('Jam '+t+' dipilih — lengkapi & simpan.'); }
+    };
+  });
+  const c=document.getElementById('lbAvail'); if(c) c.textContent=avail;
+}
+function renderQueue(list,mine){
+  const el=document.getElementById('queueList'); if(!el) return;
+  const d=document.getElementById('lbQueueDate'); if(d) d.textContent=lbDate?('· '+lbDate):'';
+  const mineSet=new Set((mine||[]).map(m=>m.time));
+  if(!list||list.length===0){ el.innerHTML='<p class="empty">Belum ada antrean untuk tanggal ini. Jadwal masih lengang! &#9986;</p>'; return; }
+  el.innerHTML=[...list].sort((a,b)=>a.time.localeCompare(b.time)).map((b,i)=>{
+    const me=mineSet.has(b.time);
+    return `<div class="queue-item ${me?'me':''}"><span class="pos">#${i+1}</span><span class="qt">${b.time}</span><span class="qb qb-${b.status}">${STATUS_BADGE[b.status]||b.status}</span>${me?'<span class="qme">Kamu</span>':''}</div>`;
+  }).join('');
+}
 
 /* ============================================================
    DASHBOARD (role-based)
@@ -706,6 +863,7 @@ async function setStatus(id,status){const {error}=await supabase.from('bookings'
 
 /* init */
 loadProducts();
+initLiveBooking();
 if(!CONFIGURED)toast('Demo: isi SUPABASE_URL & KEY untuk aktifkan login.');
 </script>
 </body>
