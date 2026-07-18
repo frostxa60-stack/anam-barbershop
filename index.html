@@ -1,0 +1,712 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Anam Barbershop — Booking & Login Online</title>
+<meta name="description" content="Anam Barbershop — booking cukur online, katalog produk, login pelanggan & admin.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700&family=Azeret+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+/* ============ TOKENS — Barbershop Premium 2026 ============ */
+:root{
+  --bg:#000000; --bg-elev:#0c0c0c; --bg-elev2:#121212;
+  --text:#ffffff; --text-2:#b8b8b8; --text-3:rgba(255,255,255,.55);
+  --accent:#e8b15e; --accent-2:#c9883b; --accent-glow:rgba(232,177,94,.16);
+  --frost:rgba(255,255,255,.08); --frost-2:rgba(255,255,255,.045);
+  --ring:rgba(232,177,94,.22);
+  --r-sm:8px; --r-md:12px; --r-lg:18px; --r-pill:100px;
+  --maxw:1200px; --ease:cubic-bezier(.22,1,.36,1);
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--text);font-family:'Inter',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;line-height:1.5;overflow-x:hidden;-webkit-font-smoothing:antialiased}
+::selection{background:var(--accent);color:#000}
+a{color:inherit;text-decoration:none}
+img{max-width:100%;display:block}
+h1,h2,h3,.display{font-family:'Oswald',sans-serif;font-weight:600}
+
+.bg-fx{position:fixed;inset:0;z-index:0;pointer-events:none}
+.bg-fx::before{content:"";position:absolute;inset:0;background:
+  radial-gradient(55vw 55vw at 12% -5%,rgba(232,177,94,.16),transparent 60%),
+  radial-gradient(45vw 45vw at 100% 8%,rgba(232,177,94,.08),transparent 55%),
+  radial-gradient(65vw 65vw at 50% 115%,rgba(201,136,59,.12),transparent 60%)}
+.bg-fx::after{content:"";position:absolute;inset:0;opacity:.04;mix-blend-mode:overlay;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")}
+main,header,footer,modal-host{position:relative;z-index:1}
+
+.wrap{max-width:var(--maxw);margin:0 auto;padding:0 24px}
+section{padding:110px 0}
+.eyebrow{font-family:'Azeret Mono',monospace;font-size:12px;letter-spacing:.2em;text-transform:uppercase;color:var(--accent);margin-bottom:16px;display:flex;align-items:center;gap:10px}
+.eyebrow::before{content:"";width:26px;height:1px;background:var(--accent)}
+h2.title{font-size:clamp(32px,5vw,60px);font-weight:600;line-height:1.0;letter-spacing:-.5px;margin-bottom:14px}
+.lead{color:var(--text-2);font-size:18px;max-width:560px}
+
+/* NAV */
+header.nav{position:fixed;top:0;left:0;right:0;z-index:50;transition:background .3s,backdrop-filter .3s}
+header.nav.scrolled{background:rgba(0,0,0,.65);backdrop-filter:blur(14px);border-bottom:1px solid var(--frost-2)}
+.nav-inner{max-width:var(--maxw);margin:0 auto;padding:15px 24px;display:flex;align-items:center;justify-content:space-between}
+.logo{font-family:'Oswald',sans-serif;font-weight:700;font-size:20px;letter-spacing:.5px;display:flex;align-items:center;gap:9px}
+.logo .mark{width:30px;height:30px;border-radius:50%;border:2px solid var(--accent);display:grid;place-items:center;color:var(--accent);font-size:13px}
+.logo span{color:var(--accent)}
+.nav-links{display:flex;gap:28px;align-items:center}
+.nav-links a{font-size:15px;color:var(--text-2);transition:color .2s}
+.nav-links a:hover{color:var(--text)}
+#dashLink{display:none}
+.btn{font-family:inherit;cursor:pointer;border:none;font-size:15px;font-weight:600;border-radius:var(--r-pill);padding:10px 20px;transition:transform .25s var(--ease),background .25s,box-shadow .25s}
+.btn-primary{background:var(--accent);color:#000}.btn-primary:hover{transform:scale(1.04);box-shadow:0 0 22px var(--accent-glow)}
+.btn-frost{background:var(--frost);color:var(--text);backdrop-filter:blur(8px)}.btn-frost:hover{background:rgba(255,255,255,.16);transform:scale(1.04)}
+.btn-wa{background:#25D366;color:#fff}.btn-wa:hover{transform:scale(1.04);box-shadow:0 0 22px rgba(37,211,102,.35)}
+.btn-ghost{background:transparent;border:1px solid var(--frost);color:var(--text)}.btn-ghost:hover{border-color:var(--accent)}
+.nav-toggle{display:none;background:none;border:none;color:#fff;font-size:24px;cursor:pointer}
+.progress{position:fixed;top:0;left:0;height:2px;background:var(--accent);width:0;z-index:60;box-shadow:0 0 12px var(--accent)}
+
+/* HERO */
+.hero{padding:165px 0 80px;position:relative}
+.hero .status{display:inline-flex;align-items:center;gap:8px;font-size:13px;color:var(--text-2);border:1px solid var(--ring);background:var(--frost-2);padding:7px 14px;border-radius:var(--r-pill);margin-bottom:30px}
+.status .dot{width:8px;height:8px;border-radius:50%;background:#22c55e;box-shadow:0 0 10px #22c55e;animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.35}}
+.hero h1{font-size:clamp(52px,11vw,128px);font-weight:700;line-height:.9;letter-spacing:-1px;margin-bottom:10px}
+.hero h1 .nm{color:var(--accent);display:block}
+.hero .role{font-family:'Azeret Mono',monospace;font-size:clamp(13px,2vw,16px);letter-spacing:.25em;text-transform:uppercase;color:var(--text-2);margin-bottom:26px}
+.hero p.sub{font-size:clamp(17px,2.3vw,21px);color:var(--text-2);max-width:600px;margin-bottom:38px}
+.hero-cta{display:flex;gap:14px;flex-wrap:wrap}
+.hero-meta{display:flex;gap:42px;margin-top:64px;flex-wrap:wrap}
+.hero-meta .item .n{font-family:'Oswald',sans-serif;font-size:38px;font-weight:600;letter-spacing:-1px}
+.hero-meta .item .l{font-size:12px;color:var(--text-2);font-family:'Azeret Mono',monospace;text-transform:uppercase;letter-spacing:.1em;margin-top:2px}
+
+/* MARQUEE */
+.marquee{border-top:1px solid var(--frost-2);border-bottom:1px solid var(--frost-2);padding:22px 0;overflow:hidden;white-space:nowrap}
+.marquee-track{display:inline-flex;gap:48px;animation:scroll 30s linear infinite}
+.marquee:hover .marquee-track{animation-play-state:paused}
+.marquee span{font-family:'Oswald',sans-serif;font-size:18px;font-weight:500;letter-spacing:1px;text-transform:uppercase;color:var(--text-2);display:inline-flex;align-items:center;gap:48px}
+.marquee span::after{content:"✦";color:var(--accent);font-size:13px}
+@keyframes scroll{to{transform:translateX(-50%)}}
+
+/* SERVICES */
+.svc-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-top:50px}
+.svc{background:var(--bg-elev);border:1px solid var(--ring);border-radius:var(--r-lg);padding:26px;position:relative;overflow:hidden;transition:transform .35s var(--ease),border-color .35s}
+.svc:hover{transform:translateY(-5px);border-color:rgba(232,177,94,.5)}
+.svc .glow{position:absolute;width:180px;height:180px;border-radius:50%;background:radial-gradient(circle,var(--accent-glow),transparent 70%);top:-50px;right:-50px;opacity:0;transition:opacity .4s}
+.svc:hover .glow{opacity:1}
+.svc .ico{font-size:26px;margin-bottom:14px}
+.svc h3{font-size:23px;font-weight:600;letter-spacing:.3px;margin-bottom:8px}
+.svc p{color:var(--text-2);font-size:14px;margin-bottom:18px;min-height:38px}
+.svc .row{display:flex;align-items:center;justify-content:space-between;border-top:1px solid var(--frost-2);padding-top:14px}
+.svc .price{font-family:'Oswald',sans-serif;font-size:26px;font-weight:600;color:var(--accent)}
+.svc .dur{font-family:'Azeret Mono',monospace;font-size:12px;color:var(--text-3)}
+
+/* BOOKING */
+.booking{background:var(--bg-elev);border:1px solid var(--ring);border-radius:var(--r-lg);padding:44px;display:grid;grid-template-columns:1fr 1fr;gap:44px;margin-top:40px;position:relative;overflow:hidden}
+.booking .glowbig{position:absolute;width:420px;height:420px;border-radius:50%;background:radial-gradient(circle,var(--accent-glow),transparent 70%);top:-160px;left:-120px;pointer-events:none}
+.booking h2{font-size:clamp(28px,4vw,44px);font-weight:600;letter-spacing:-.5px;line-height:1}
+.booking p{color:var(--text-2);margin-top:14px}
+.wa-box{margin-top:22px;display:flex;align-items:center;gap:14px;background:rgba(37,211,102,.08);border:1px solid rgba(37,211,102,.3);border-radius:var(--r-md);padding:16px}
+.wa-box .ic{font-size:30px}.wa-box .t{font-size:13px;color:var(--text-3);font-family:'Azeret Mono',monospace;text-transform:uppercase;letter-spacing:.08em}
+.wa-box .n{font-size:17px;font-weight:600;color:#fff}
+.field{margin-bottom:16px}
+.field label{display:block;font-size:12px;color:var(--text-2);margin-bottom:7px;font-family:'Azeret Mono',monospace;text-transform:uppercase;letter-spacing:.08em}
+.field input,.field select,.field textarea{width:100%;background:var(--frost-2);border:1px solid var(--frost);border-radius:var(--r-sm);padding:12px 14px;color:#fff;font-family:inherit;font-size:15px;transition:border-color .25s}
+.field input:focus,.field select:focus,.field textarea:focus{outline:none;border-color:var(--accent)}
+.field select option{background:#0c0c0c}
+.field textarea{resize:vertical;min-height:80px}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+
+/* PRODUCTS */
+.prod-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-top:50px}
+.prod{background:var(--bg-elev);border:1px solid var(--ring);border-radius:var(--r-md);overflow:hidden;display:flex;flex-direction:column;transition:transform .35s var(--ease),border-color .35s}
+.prod:hover{transform:translateY(-5px);border-color:rgba(232,177,94,.5)}
+.prod .ph{height:150px;background:linear-gradient(135deg,#1c1407,#0a0a0a 70%);display:grid;place-items:center;position:relative;font-size:40px}
+.prod .ph .badge{position:absolute;top:10px;left:10px;font-family:'Azeret Mono',monospace;font-size:10px;letter-spacing:.1em;text-transform:uppercase;background:var(--accent);color:#000;padding:3px 8px;border-radius:var(--r-pill);font-weight:600}
+.prod .pb{padding:16px;display:flex;flex-direction:column;flex:1}
+.prod .pb h3{font-size:17px;font-weight:600;letter-spacing:.2px}
+.prod .pb .desc{color:var(--text-2);font-size:13px;margin:6px 0 12px;flex:1}
+.prod .pb .foot{display:flex;align-items:center;justify-content:space-between}
+.prod .pb .price{font-family:'Oswald',sans-serif;font-size:20px;font-weight:600;color:var(--accent)}
+.buy{font-size:13px;font-weight:600;background:var(--frost);color:#fff;border:1px solid var(--frost);padding:7px 13px;border-radius:var(--r-pill);cursor:pointer;transition:.25s}
+.buy:hover{background:var(--accent);color:#000}
+
+/* GALLERY */
+.gal-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-top:50px}
+.gal{aspect-ratio:1;border-radius:var(--r-md);overflow:hidden;position:relative;border:1px solid var(--frost-2);background:linear-gradient(135deg,#15110a,#0a0a0a);display:grid;place-items:center;transition:transform .4s var(--ease),border-color .4s}
+.gal:hover{transform:scale(1.03);border-color:rgba(232,177,94,.5)}
+.gal .tag{font-family:'Azeret Mono',monospace;font-size:12px;color:var(--text-3);letter-spacing:.1em}
+.gal::after{content:"";position:absolute;inset:0;background:radial-gradient(circle at 50% 30%,var(--accent-glow),transparent 70%);opacity:.5}
+
+/* ABOUT */
+.about-grid{display:grid;grid-template-columns:1fr 1fr;gap:50px;margin-top:50px;align-items:start}
+.about-grid p{color:var(--text-2);margin-bottom:16px}
+.about-grid .big-q{font-family:'Oswald',sans-serif;font-size:26px;font-weight:500;color:#fff;line-height:1.2;letter-spacing:-.3px;margin:10px 0 24px}
+.timeline{border-left:1px solid var(--frost)}
+.tl-item{padding:0 0 32px 32px;position:relative}
+.tl-item::before{content:"";position:absolute;left:-5px;top:6px;width:9px;height:9px;border-radius:50%;background:var(--accent);box-shadow:0 0 10px var(--accent)}
+.tl-item .when{font-family:'Azeret Mono',monospace;font-size:12px;color:var(--accent);text-transform:uppercase;letter-spacing:.1em}
+.tl-item h3{font-family:'Oswald',sans-serif;font-size:20px;font-weight:600;margin:5px 0 3px;letter-spacing:.2px}
+.tl-item .co{color:var(--text-3);font-size:14px}
+.tl-item p{color:var(--text-2);font-size:14px;margin-top:6px}
+
+/* CONTACT */
+.contact-card{background:var(--bg-elev);border:1px solid var(--ring);border-radius:var(--r-lg);padding:44px;display:grid;grid-template-columns:1.2fr 1fr;gap:40px;margin-top:40px}
+.contact-card h2{font-size:clamp(28px,4vw,46px);font-weight:600;letter-spacing:-.5px;line-height:1}
+.contact-card p{color:var(--text-2);margin-top:14px}
+.info{margin-top:22px;display:flex;flex-direction:column;gap:14px}
+.info .it{display:flex;gap:12px;align-items:flex-start}
+.info .it .i{font-size:18px;color:var(--accent);min-width:22px}
+.info .it .t b{display:block;font-size:15px;font-weight:600}
+.info .it .t span{font-size:14px;color:var(--text-2)}
+.socials{display:flex;gap:12px;margin-top:22px;flex-wrap:wrap}
+.socials a{font-size:14px;color:var(--text-2);border:1px solid var(--frost);padding:8px 14px;border-radius:var(--r-pill);transition:.25s}
+.socials a:hover{color:#000;background:var(--accent);border-color:var(--accent)}
+.map{background:linear-gradient(135deg,#15110a,#0a0a0a);border-radius:var(--r-md);min-height:200px;display:grid;place-items:center;border:1px solid var(--frost-2);position:relative;overflow:hidden}
+.map .pin{font-size:32px;position:relative;z-index:1}
+.map::after{content:"";position:absolute;inset:0;background:radial-gradient(circle at 50% 50%,var(--accent-glow),transparent 70%)}
+
+/* FOOTER */
+footer{border-top:1px solid var(--frost-2);padding:38px 0;margin-top:40px}
+.foot-inner{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:16px}
+.foot-inner p{color:var(--text-2);font-size:14px}
+.foot-inner .top{cursor:pointer;color:var(--text-2);font-size:14px;transition:color .2s}
+.foot-inner .top:hover{color:var(--accent)}
+
+/* ===== AUTH MODAL ===== */
+.modal{position:fixed;inset:0;background:rgba(0,0,0,.72);backdrop-filter:blur(6px);z-index:100;display:none;place-items:center;padding:20px}
+.modal.show{display:grid}
+.modal-card{background:#0c0c0c;border:1px solid var(--ring);border-radius:var(--r-lg);padding:34px;width:100%;max-width:410px;position:relative}
+.modal-close{position:absolute;top:14px;right:16px;background:none;border:none;color:var(--text-2);font-size:22px;cursor:pointer}
+.auth-tabs{display:flex;gap:8px;margin-bottom:20px}
+.auth-tabs button{flex:1;background:var(--frost-2);border:1px solid var(--frost);color:var(--text-2);padding:9px;border-radius:var(--r-pill);cursor:pointer;font-family:inherit;font-size:14px;font-weight:600}
+.auth-tabs button.active{background:var(--accent);color:#000;border-color:var(--accent)}
+.auth-form{display:none}.auth-form.active{display:block}
+.auth-form h3{font-family:'Oswald',sans-serif;font-size:24px;font-weight:600;margin-bottom:4px}
+.auth-form .sub{color:var(--text-2);font-size:13px;margin-bottom:18px}
+#userBox{display:none;align-items:center;gap:10px}
+.role-badge{font-family:'Azeret Mono',monospace;font-size:10px;letter-spacing:.1em;background:var(--accent);color:#000;padding:3px 9px;border-radius:var(--r-pill);font-weight:600}
+#uName{font-size:14px;font-weight:600}
+
+/* ===== DASHBOARD ===== */
+.dash{background:var(--bg-elev);border:1px solid var(--ring);border-radius:var(--r-lg);padding:36px;margin-top:40px}
+.dash-head{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px}
+.dash-head .hi{font-family:'Oswald',sans-serif;font-size:26px;font-weight:600}
+.dash-tabs{display:flex;gap:10px;margin:22px 0;flex-wrap:wrap}
+.dash-tabs button{background:var(--frost-2);border:1px solid var(--frost);color:var(--text-2);padding:8px 16px;border-radius:var(--r-pill);cursor:pointer;font-family:inherit;font-size:14px}
+.dash-tabs button.active{background:var(--accent);color:#000}
+.panel{display:none}.panel.active{display:block}
+.tbl{width:100%;border-collapse:collapse;margin-top:8px;font-size:14px}
+.tbl th,.tbl td{text-align:left;padding:10px;border-bottom:1px solid var(--frost-2);vertical-align:middle}
+.tbl th{color:var(--text-2);font-family:'Azeret Mono',monospace;font-size:11px;text-transform:uppercase;letter-spacing:.08em}
+.status-sel{background:#0c0c0c;color:#fff;border:1px solid var(--frost);border-radius:6px;padding:5px;font-family:inherit;font-size:13px}
+.pill{font-size:11px;font-family:'Azeret Mono',monospace;padding:3px 9px;border-radius:var(--r-pill);text-transform:uppercase}
+.pill.pending{background:rgba(232,177,94,.18);color:var(--accent)}
+.pill.confirmed{background:rgba(37,211,102,.18);color:#4ade80}
+.pill.done{background:rgba(255,255,255,.12);color:#fff}
+.pill.cancelled{background:rgba(239,68,68,.18);color:#f87171}
+.empty{color:var(--text-2);font-size:14px;padding:20px 0}
+.add-form{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-top:16px;background:var(--frost-2);border:1px solid var(--frost);border-radius:var(--r-md);padding:18px}
+.add-form .full{grid-column:span 2}
+
+/* TOAST */
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(20px);background:#0c0c0c;border:1px solid var(--ring);color:#fff;padding:14px 22px;border-radius:var(--r-pill);z-index:200;opacity:0;transition:.3s;font-size:14px;max-width:90vw;text-align:center}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+
+/* REVEAL */
+.reveal{opacity:1;transform:none}
+body.anim .reveal{opacity:0;transform:translateY(28px);transition:opacity .8s var(--ease),transform .8s var(--ease)}
+body.anim .reveal.in{opacity:1;transform:none}
+
+@media(max-width:920px){
+  .nav-links{display:none}.nav-toggle{display:block}
+  .nav-links.open{display:flex;position:absolute;top:62px;left:0;right:0;flex-direction:column;background:rgba(0,0,0,.96);backdrop-filter:blur(14px);padding:20px 24px;gap:18px;border-bottom:1px solid var(--frost-2)}
+  section{padding:78px 0}
+  .svc-grid{grid-template-columns:1fr}
+  .booking,.contact-card,.about-grid{grid-template-columns:1fr;padding:32px;gap:30px}
+  .prod-grid{grid-template-columns:repeat(2,1fr)}
+  .gal-grid{grid-template-columns:repeat(2,1fr)}
+  .add-form{grid-template-columns:1fr}
+  .add-form .full{grid-column:span 1}
+}
+@media(max-width:480px){.prod-grid,.gal-grid{grid-template-columns:1fr}.hero-meta{gap:26px}}
+</style>
+</head>
+<body>
+<div class="bg-fx"></div>
+<div class="progress" id="progress"></div>
+
+<!-- ===================== NAV ===================== -->
+<header class="nav" id="nav">
+  <div class="nav-inner">
+    <div class="logo"><span class="mark">✂</span>ANAM<span>.</span></div>
+    <nav class="nav-links" id="navLinks">
+      <a href="#layanan">Layanan</a>
+      <a href="#booking">Booking</a>
+      <a href="#katalog">Katalog</a>
+      <a href="#galeri">Galeri</a>
+      <a href="#tentang">Tentang</a>
+      <a href="#dashboard" id="dashLink" onclick="openDashboard(event)">Dashboard</a>
+    </nav>
+    <div style="display:flex;align-items:center;gap:10px">
+      <button class="btn btn-primary" id="loginBtn" onclick="openAuth('login')">Masuk</button>
+      <div id="userBox">
+        <span id="uName">User</span>
+        <span class="role-badge" id="uRole">CUSTOMER</span>
+        <button class="btn btn-ghost" style="padding:7px 14px" onclick="doLogout()">Keluar</button>
+      </div>
+    </div>
+    <button class="nav-toggle" id="navToggle">☰</button>
+  </div>
+</header>
+
+<main>
+  <!-- ===================== HERO ===================== -->
+  <section class="hero wrap">
+    <div class="status reveal"><span class="dot"></span> Buka hari ini · 10:00 – 21:00</div>
+    <div class="role reveal">Capster · Barber Specialist</div>
+    <h1 class="reveal">Halo, saya<br><span class="nm">ANAM</span></h1>
+    <p class="sub reveal">Cukur presisi, fade rapi, dan gaya yang pas buat kamu.
+      Booking online sekarang — antri jadi kemarin.</p>
+    <div class="hero-cta reveal">
+      <button class="btn btn-primary" onclick="document.getElementById('booking').scrollIntoView()">Booking cukur ↑</button>
+      <button class="btn btn-wa" id="waHero">Chat WA ⊕</button>
+      <button class="btn btn-frost" onclick="openAuth('register')">Daftar akun</button>
+    </div>
+    <div class="hero-meta reveal">
+      <div class="item"><div class="n">8+</div><div class="l">Tahun cukur</div></div>
+      <div class="item"><div class="n">2.000+</div><div class="l">Pelanggan</div></div>
+      <div class="item"><div class="n">4.9★</div><div class="l">Rating</div></div>
+    </div>
+  </section>
+
+  <!-- MARQUEE -->
+  <div class="marquee"><div class="marquee-track">
+    <span>Haircut</span><span>Fade</span><span>Beard Trim</span><span>Kids Cut</span><span>Pomade</span><span>Hot Towel</span><span>Shaving</span><span>Hair Tattoo</span>
+    <span>Haircut</span><span>Fade</span><span>Beard Trim</span><span>Kids Cut</span><span>Pomade</span><span>Hot Towel</span><span>Shaving</span><span>Hair Tattoo</span>
+  </div></div>
+
+  <!-- ===================== LAYANAN ===================== -->
+  <section id="layanan" class="wrap">
+    <div class="eyebrow reveal">Layanan</div>
+    <h2 class="title reveal">Pilih gaya kamu.</h2>
+    <p class="lead reveal">Dari potong pendek rapi sampai fade detail — semua dikerjakan teliti.</p>
+    <div class="svc-grid">
+      <div class="svc reveal"><div class="glow"></div><div class="ico">✂</div><h3>Haircut Regular</h3><p>Potong rambut rapi sesuai bentuk wajah & gaya harian.</p><div class="row"><span class="price">Rp35.000</span><span class="dur">30 menit</span></div></div>
+      <div class="svc reveal"><div class="glow"></div><div class="ico">▰</div><h3>Fade &amp; Pompadour</h3><p>Transisi fade halus + styling atas untuk look kekinian.</p><div class="row"><span class="price">Rp55.000</span><span class="dur">45 menit</span></div></div>
+      <div class="svc reveal"><div class="glow"></div><div class="ico">🧔</div><h3>Beard Trim</h3><p>Perapihan jenggot & contoured line-up yang bersih.</p><div class="row"><span class="price">Rp30.000</span><span class="dur">20 menit</span></div></div>
+      <div class="svc reveal"><div class="glow"></div><div class="ico">🔥</div><h3>Hot Towel Shave</h3><p>Cukur licin pakai kompres hangat — relax ala barbershop.</p><div class="row"><span class="price">Rp40.000</span><span class="dur">30 menit</span></div></div>
+      <div class="svc reveal"><div class="glow"></div><div class="ico">👦</div><h3>Kids Cut</h3><p>Potong rambut anak aman, nyaman, dan cepat.</p><div class="row"><span class="price">Rp30.000</span><span class="dur">25 menit</span></div></div>
+      <div class="svc reveal"><div class="glow"></div><div class="ico">💎</div><h3>Premium Package</h3><p>Haircut + beard + hot towel + styling produk pilihan.</p><div class="row"><span class="price">Rp95.000</span><span class="dur">70 menit</span></div></div>
+    </div>
+  </section>
+
+  <!-- ===================== BOOKING ===================== -->
+  <section id="booking" class="wrap">
+    <div class="eyebrow reveal">Booking Online</div>
+    <h2 class="title reveal">Ambil jadwalmu.</h2>
+    <p class="lead reveal">Login dulu, lalu booking — riwayatmu tersimpan & bisa dicek kapan saja.</p>
+    <div class="booking reveal">
+      <div class="glowbig"></div>
+      <div>
+        <h2>Cepat &amp; mudah.</h2>
+        <p>Booking otomatis tersimpan ke sistem & kami konfirmasi. Atau langsung chat WA.</p>
+        <div class="wa-box"><div class="ic">⊕</div><div><div class="t">WhatsApp langsung</div><div class="n" id="waNum">+62 856-9511-5905</div></div></div>
+        <button class="btn btn-wa" id="waBook" style="margin-top:18px;width:100%;padding:13px">Booking via WhatsApp →</button>
+      </div>
+      <form id="bookForm">
+        <div class="field"><label>Nama</label><input type="text" id="bk_name" placeholder="Nama kamu" required></div>
+        <div class="form-row">
+          <div class="field"><label>No. WhatsApp</label><input type="tel" id="bk_phone" placeholder="08xx" required></div>
+          <div class="field"><label>Layanan</label><select id="bk_svc" required><option value="">Pilih...</option><option>Haircut Regular</option><option>Fade &amp; Pompadour</option><option>Beard Trim</option><option>Hot Towel Shave</option><option>Kids Cut</option><option>Premium Package</option></select></div>
+        </div>
+        <div class="form-row">
+          <div class="field"><label>Tanggal</label><input type="date" id="bk_date" required></div>
+          <div class="field"><label>Jam</label><input type="time" id="bk_time" required></div>
+        </div>
+        <div class="field"><label>Catatan (opsional)</label><textarea id="bk_note" placeholder="Gaya yang diinginkan, dll."></textarea></div>
+        <button type="submit" class="btn btn-primary" style="width:100%;padding:13px">Simpan Booking →</button>
+      </form>
+    </div>
+  </section>
+
+  <!-- ===================== KATALOG ===================== -->
+  <section id="katalog" class="wrap">
+    <div class="eyebrow reveal">Katalog Produk</div>
+    <h2 class="title reveal">Produk perawatan rambut.</h2>
+    <p class="lead reveal">Produk pilihan yang dipakai & dijual di tempat. Order tinggal klik.</p>
+    <div class="prod-grid" id="prodGrid"></div>
+  </section>
+
+  <!-- ===================== GALERI ===================== -->
+  <section id="galeri" class="wrap">
+    <div class="eyebrow reveal">Galeri</div>
+    <h2 class="title reveal">Hasil cukur terbaru.</h2>
+    <p class="lead reveal">Beberapa look yang keluar dari kursi Anam.</p>
+    <div class="gal-grid">
+      <div class="gal reveal"><span class="tag">FADE · 2026</span></div>
+      <div class="gal reveal"><span class="tag">POMPADOUR</span></div>
+      <div class="gal reveal"><span class="tag">TEXTURED</span></div>
+      <div class="gal reveal"><span class="tag">BEARD LINE</span></div>
+      <div class="gal reveal"><span class="tag">BUZZ CUT</span></div>
+      <div class="gal reveal"><span class="tag">MID FADE</span></div>
+      <div class="gal reveal"><span class="tag">QUiff</span></div>
+      <div class="gal reveal"><span class="tag">SKIN FADE</span></div>
+    </div>
+  </section>
+
+  <!-- ===================== TENTANG ===================== -->
+  <section id="tentang" class="wrap">
+    <div class="eyebrow reveal">Tentang Anam</div>
+    <h2 class="title reveal">Dari kursi ke kursi.</h2>
+    <div class="about-grid">
+      <div class="reveal">
+        <p class="big-q">"Gue percaya potongan rambut bagus itu boost confidence — dan itu harus accessible buat semua orang."</p>
+        <p>Anam mulai dari magang di barbershop kecil, belajar tiap detail fade, line-up, sampai cara nyambut pelanggan. Delapan tahun lebih, ia sudah tangani ribuan kepala — dari anak sekolah sampai eksekutif.</p>
+        <p>Sekarang lewat website ini, pelanggan bisa booking dengan gampang dan beli produk perawatan langsung dari rumah.</p>
+        <div class="socials"><a href="#">Instagram</a><a href="#">TikTok</a><a href="#">Facebook</a></div>
+      </div>
+      <div class="timeline reveal">
+        <div class="tl-item"><div class="when">2018 — Sekarang</div><h3>Capster Senior</h3><div class="co">Anam Barbershop · Boyolali</div><p>Pemilik sekaligus capster utama. Spesialis fade & pompadour.</p></div>
+        <div class="tl-item"><div class="when">2015 — 2018</div><h3>Barber</h3><div class="co">Studio Cukur Kota</div><p>Menangani ratusan pelanggan rutin, membangun loyalitas.</p></div>
+        <div class="tl-item"><div class="when">2014 — 2015</div><h3>Magang</h3><div class="co">Barbershop Lokal</div><p>Belajar fondasi cukur, hygiene, dan pelayanan pelanggan.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== DASHBOARD ===================== -->
+  <section id="dashboard" class="wrap">
+    <div class="eyebrow reveal">Area Member</div>
+    <h2 class="title reveal">Dashboard kamu.</h2>
+    <div class="dash reveal" id="dashBox">
+      <div class="dash-head">
+        <div class="hi" id="dashHi">Hai!</div>
+        <span class="role-badge" id="dashRole">CUSTOMER</span>
+      </div>
+      <div id="dashContent"><p class="empty">Memuat…</p></div>
+    </div>
+  </section>
+
+  <!-- ===================== KONTAK ===================== -->
+  <section id="kontak" class="wrap">
+    <div class="eyebrow reveal">Kunjungi</div>
+    <h2 class="title reveal">Ketemu di tempat.</h2>
+    <div class="contact-card reveal">
+      <div>
+        <h2>Alamat &amp; kontak.</h2>
+        <p>Datang langsung atau booking dulu biar gak nunggu lama.</p>
+        <div class="info">
+          <div class="it"><div class="i">📍</div><div class="t"><b>Lokasi</b><span>Sumber Agung, Klego, Boyolali</span></div></div>
+          <div class="it"><div class="i">🕐</div><div class="t"><b>Jam buka</b><span>Senin–Minggu · 10:00 – 21:00</span></div></div>
+          <div class="it"><div class="i">⊕</div><div class="t"><b>WhatsApp</b><span>+62 856-9511-5905</span></div></div>
+        </div>
+        <div class="socials"><a href="#">Instagram</a><a href="#">TikTok</a><a href="#">Maps</a></div>
+      </div>
+      <div class="map"><div class="pin">📍</div></div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap foot-inner">
+    <p>© 2026 Anam Barbershop — Potong presisi, gaya nyaman.</p>
+    <div class="top" onclick="window.scrollTo({top:0,behavior:'smooth'})">↑ Kembali ke atas</div>
+  </div>
+</footer>
+
+<!-- ===================== AUTH MODAL ===================== -->
+<div class="modal" id="authModal">
+  <div class="modal-card">
+    <button class="modal-close" onclick="closeAuth()">×</button>
+    <div class="auth-tabs">
+      <button id="tabLogin" class="active" onclick="setAuthMode('login')">Masuk</button>
+      <button id="tabReg" onclick="setAuthMode('register')">Daftar</button>
+    </div>
+    <form class="auth-form active" id="loginForm">
+      <h3>Masuk</h3><p class="sub">Akses booking & dashboard kamu.</p>
+      <div class="field"><label>Email</label><input type="email" id="lg_email" placeholder="kamu@email.com" required></div>
+      <div class="field"><label>Password</label><input type="password" id="lg_pass" placeholder="••••••••" required></div>
+      <button type="submit" class="btn btn-primary" style="width:100%;padding:13px">Masuk</button>
+    </form>
+    <form class="auth-form" id="regForm">
+      <h3>Daftar</h3><p class="sub">Buat akun pelanggan gratis.</p>
+      <div class="field"><label>Nama</label><input type="text" id="rg_name" placeholder="Nama lengkap" required></div>
+      <div class="field"><label>No. WhatsApp</label><input type="tel" id="rg_phone" placeholder="08xx" required></div>
+      <div class="field"><label>Email</label><input type="email" id="rg_email" placeholder="kamu@email.com" required></div>
+      <div class="field"><label>Password</label><input type="password" id="rg_pass" placeholder="min. 6 karakter" required></div>
+      <button type="submit" class="btn btn-primary" style="width:100%;padding:13px">Daftar</button>
+    </form>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+/* ============================================================
+   KONFIGURASI SUPABASE — GANTI DENGAN PUNYAMU
+   ============================================================ */
+const SUPABASE_URL = 'https://eflphiecgjunrlxqsqfl.supabase.co';
+const SUPABASE_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVmbHBoaWVjZ2p1bnJseHFzcWZsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQzMjcwMDgsImV4cCI6MjA5OTkwMzAwOH0.5ZiKKcUdzSYRLAR1vWtBfz5acYgajwLRN5QxN7aHLbs';
+const WA_NUMBER = "6285695115905"; // nomor WA Anam (tanpa +)
+
+let supabase = null, currentUser = null, currentProfile = null, SB_READY = false;
+const CONFIGURED = SUPABASE_URL.startsWith('http') && SUPABASE_ANON !== 'YOUR-ANON-KEY';
+
+function initSupabase(){
+  if(!CONFIGURED) return false;
+  if(typeof window.supabase === 'undefined') return false;
+  try { supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON); SB_READY = true; return true; }
+  catch(e){ console.warn('Supabase init gagal:', e); return false; }
+}
+if(!CONFIGURED){ console.warn('⚠ Supabase belum dikonfigurasi.'); }
+
+/* ---------- toast ---------- */
+let toastTimer;
+function toast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');clearTimeout(toastTimer);toastTimer=setTimeout(()=>t.classList.remove('show'),3200);}
+
+/* ---------- WA helpers ---------- */
+function waLink(text){return "https://wa.me/"+WA_NUMBER+"?text="+encodeURIComponent(text);}
+function openWA(text){window.open(waLink(text),'_blank');}
+document.getElementById('waHero').onclick=()=>openWA("Halo Kak Anam, saya mau tanya jadwal cukur.");
+document.getElementById('waBook').onclick=()=>{
+  const f=document.getElementById('bookForm'); if(!f.reportValidity())return;
+  const name=document.getElementById('bk_name').value, phone=document.getElementById('bk_phone').value,
+        svc=document.getElementById('bk_svc').value, date=document.getElementById('bk_date').value,
+        time=document.getElementById('bk_time').value, note=document.getElementById('bk_note').value;
+  openWA(`*BOOKING CUKUR — ANAM BARBERSHOP*\nNama: ${name}\nNo. WA: ${phone}\nLayanan: ${svc}\nTanggal: ${date}\nJam: ${time}\nCatatan: ${note||'-'}`);
+};
+
+/* ---------- scroll / nav / reveal (tetap) ---------- */
+const nav=document.getElementById('nav'),prog=document.getElementById('progress');
+addEventListener('scroll',()=>{const h=document.documentElement;prog.style.width=(h.scrollTop/(h.scrollHeight-h.clientHeight)*100)+'%';nav.classList.toggle('scrolled',h.scrollTop>20);});
+document.getElementById('navToggle').onclick=()=>document.getElementById('navLinks').classList.toggle('open');
+
+/* reveal: animasi HANYA enhancement — konten tetap tampil walau JS/IO gagal */
+document.body.classList.add('anim');
+function revealAll(){document.querySelectorAll('.reveal').forEach(el=>el.classList.add('in'));}
+if('IntersectionObserver' in window){
+  try{
+    const io=new IntersectionObserver((es)=>{es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target);}});},{threshold:.12});
+    document.querySelectorAll('.reveal').forEach((el,i)=>{el.style.transitionDelay=(i%4*0.05)+'s';io.observe(el);});
+  }catch(e){ revealAll(); }
+}else{ revealAll(); }
+/* safety net: paksa tampil setelah 1.2s sekalipun IO tidak jalan */
+setTimeout(revealAll,1200);
+
+/* ============================================================
+   PRODUK (dari DB kalau ada, fallback statis)
+   ============================================================ */
+const FALLBACK_PRODUCTS=[
+  {name:'Anam Matte Pomade',description:'Hold kuat, finish matte, gak berminyak.',price:85000,emoji:'🧴',badge:'Best'},
+  {name:'Hair Clay 100g',description:'Tekstur natural untuk gaya kasual harian.',price:75000,emoji:'🪞',badge:null},
+  {name:'Shampoo Anti-Dandruff',description:'Rambut bersih & kulit kepala sehat.',price:65000,emoji:'🧼',badge:null},
+  {name:'Aftershave Lotion',description:'Menenangkan kulit setelah cukur.',price:70000,emoji:'🌫️',badge:null},
+  {name:'Professional Comb',description:'Sisir anti-statis untuk fade & detail.',price:35000,emoji:'💇',badge:null},
+  {name:'Hair Tonic 150ml',description:'Menyegarkan & menumbuhkan rambut.',price:60000,emoji:'💧',badge:null},
+  {name:'Beard Oil',description:'Lembutkan & harumkan jenggot.',price:55000,emoji:'🧔',badge:null},
+  {name:'Starter Kit',description:'Pomade + shampoo + sisir hemat.',price:160000,emoji:'🎁',badge:null},
+];
+function renderProducts(list){
+  const grid=document.getElementById('prodGrid');
+  grid.innerHTML=list.map(p=>`
+    <div class="prod">
+      <div class="ph">${p.emoji||'🛒'}${p.badge?`<span class="badge">${p.badge}</span>`:''}</div>
+      <div class="pb"><h3>${p.name}</h3><p class="desc">${p.description||''}</p>
+        <div class="foot"><span class="price">Rp${Number(p.price).toLocaleString('id-ID')}</span>
+        <button class="buy" data-name="${p.name}" data-price="${p.price}">Beli</button></div></div>
+    </div>`).join('');
+  grid.querySelectorAll('.buy').forEach(b=>b.onclick=()=>openWA(`Halo Kak Anam, saya mau order *${b.dataset.name}* (Rp${Number(b.dataset.price).toLocaleString('id-ID')}).`));
+}
+async function loadProducts(){
+  if(!SB_READY){renderProducts(FALLBACK_PRODUCTS);return;}
+  const {data,error}=await supabase.from('products').select('*').order('created_at');
+  renderProducts((!error&&data&&data.length)?data:FALLBACK_PRODUCTS);
+}
+
+/* ============================================================
+   AUTH
+   ============================================================ */
+const authModal=document.getElementById('authModal');
+function openAuth(mode){ if(!SB_READY){toast('Koneksi Supabase belum siap. Cek koneksi internet.');return;} setAuthMode(mode); authModal.classList.add('show'); }
+function closeAuth(){authModal.classList.remove('show');}
+authModal.addEventListener('click',e=>{if(e.target===authModal)closeAuth();});
+function setAuthMode(mode){
+  document.getElementById('tabLogin').classList.toggle('active',mode==='login');
+  document.getElementById('tabReg').classList.toggle('active',mode==='register');
+  document.getElementById('loginForm').classList.toggle('active',mode==='login');
+  document.getElementById('regForm').classList.toggle('active',mode==='register');
+}
+document.getElementById('loginForm').addEventListener('submit',async e=>{
+  e.preventDefault();
+  if(!SB_READY){toast('Koneksi Supabase belum siap.');return;}
+  const {error}=await supabase.auth.signInWithPassword({email:document.getElementById('lg_email').value,password:document.getElementById('lg_pass').value});
+  if(error){toast('Gagal masuk: '+error.message);return;}
+  toast('Berhasil masuk!');closeAuth();
+});
+document.getElementById('regForm').addEventListener('submit',async e=>{
+  e.preventDefault();
+  if(!SB_READY){toast('Koneksi Supabase belum siap.');return;}
+  const email=document.getElementById('rg_email').value,pass=document.getElementById('rg_pass').value,
+        name=document.getElementById('rg_name').value,phone=document.getElementById('rg_phone').value;
+  const {data,error}=await supabase.auth.signUp({email,password,options:{data:{full_name:name,phone}}});
+  if(error){toast('Gagal daftar: '+error.message);return;}
+  if(data.session){
+    // email confirmation OFF -> langsung masuk & simpan nama/phone
+    if(data.user) await supabase.from('profiles').update({full_name:name,phone}).eq('id',data.user.id);
+    toast('Akun dibuat! Kamu sudah masuk.');closeAuth();
+  } else {
+    toast('Akun dibuat! Cek email untuk verifikasi, lalu login.');closeAuth();
+  }
+});
+async function doLogout(){ if(!SB_READY){toast('Koneksi gagal.');return;} await supabase.auth.signOut();currentUser=null;currentProfile=null;renderAuth();toast('Keluar.');}
+
+function renderAuth(){
+  const loggedIn=!!currentUser;
+  document.getElementById('loginBtn').style.display=loggedIn?'none':'';
+  document.getElementById('userBox').style.display=loggedIn?'flex':'none';
+  document.getElementById('dashLink').style.display=loggedIn?'':'none';
+  if(loggedIn){
+    document.getElementById('uName').textContent=currentProfile?.full_name||currentUser.email;
+    const r=(currentProfile?.role||'customer').toUpperCase();
+    document.getElementById('uRole').textContent=r;
+    document.getElementById('dashRole').textContent=r;
+    document.getElementById('dashHi').textContent='Hai, '+(currentProfile?.full_name||currentUser.email.split('@')[0])+'!';
+  }
+}
+
+/* session init + listener */
+if(CONFIGURED){
+  function startAuth(){
+    supabase.auth.getSession().then(({data})=>{
+      if(data.session){currentUser=data.session.user;supabase.from('profiles').select('*').eq('id',currentUser.id).single().then(({data:p})=>{currentProfile=p;renderAuth();});}
+      renderAuth();
+    });
+    supabase.auth.onAuthStateChange((_e,s)=>{
+      if(s&&s.user){currentUser=s.user;supabase.from('profiles').select('*').eq('id',currentUser.id).single().then(({data:p})=>{currentProfile=p;renderAuth();});}
+      else{currentUser=null;currentProfile=null;renderAuth();}
+    });
+    loadProducts();
+  }
+  if(initSupabase()){ startAuth(); }
+  else {
+    const cdns=['https://unpkg.com/@supabase/supabase-js@2'];
+    let i=0; (function next(){
+      if(initSupabase()) return startAuth();
+      if(i>=cdns.length){ renderAuth(); toast('Mode demo: koneksi Supabase belum tersambung.'); return; }
+      const s=document.createElement('script'); s.src=cdns[i++];
+      s.onload=()=>{ initSupabase()?startAuth():next(); }; s.onerror=next; document.head.appendChild(s);
+    })();
+  }
+} else { renderAuth(); toast('Demo: isi SUPABASE_URL & KEY untuk aktifkan login.'); }
+
+/* ============================================================
+   BOOKING (simpan ke DB kalau login)
+   ============================================================ */
+document.getElementById('bookForm').addEventListener('submit',async e=>{
+  e.preventDefault();
+  if(!SB_READY){toast('Koneksi Supabase belum siap.');return;}
+  if(!currentUser){openAuth('login');toast('Silakan masuk dulu untuk simpan booking.');return;}
+  const payload={user_id:currentUser.id,name:document.getElementById('bk_name').value,phone:document.getElementById('bk_phone').value,
+    service:document.getElementById('bk_svc').value,booking_date:document.getElementById('bk_date').value,
+    booking_time:document.getElementById('bk_time').value,note:document.getElementById('bk_note').value,status:'pending'};
+  const {error}=await supabase.from('bookings').insert(payload);
+  if(error){toast('Gagal: '+error.message);}else{toast('✓ Booking tersimpan! Kami akan konfirmasi.');document.getElementById('bookForm').reset();}
+});
+
+/* ============================================================
+   DASHBOARD (role-based)
+   ============================================================ */
+function openDashboard(e){ if(e)e.preventDefault(); if(!currentUser){openAuth('login');return;} document.getElementById('dashboard').scrollIntoView(); renderDashboard(); }
+const STATUS_LABEL={pending:'Menunggu',confirmed:'Dikonfirmasi',done:'Selesai',cancelled:'Batal'};
+async function renderDashboard(){
+  const role=(currentProfile?.role||'customer');
+  const box=document.getElementById('dashContent');
+  if(role==='customer')return renderCustomerDash(box);
+  if(role==='barber')return renderBarberDash(box);
+  return renderStaffDash(box); // admin / developer
+}
+async function fetchBookings(){const {data}=await supabase.from('bookings').select('*').order('created_at',{ascending:false});return data||[];}
+async function fetchProfiles(){const {data}=await supabase.from('profiles').select('*').order('created_at');return data||[];}
+
+async function renderCustomerDash(box){
+  const all=await fetchBookings();const mine=all.filter(b=>b.user_id===currentUser.id);
+  box.innerHTML=`<p class="lead">Riwayat booking kamu.</p>`+bookingTable(mine,false);
+}
+async function renderBarberDash(box){
+  const all=await fetchBookings();
+  box.innerHTML=`<p class="lead">Antrian booking hari ini.</p>`+bookingTable(all,true);
+}
+async function renderStaffDash(box){
+  box.innerHTML=`
+    <div class="dash-tabs">
+      <button class="active" data-tab="b">Kelola Booking</button>
+      <button data-tab="p">Kelola Produk</button>
+      <button data-tab="u">Kelola User</button>
+    </div>
+    <div class="panel active" id="tab-b"></div>
+    <div class="panel" id="tab-p"></div>
+    <div class="panel" id="tab-u"></div>`;
+  box.querySelectorAll('.dash-tabs button').forEach(btn=>btn.onclick=()=>{
+    box.querySelectorAll('.dash-tabs button').forEach(x=>x.classList.remove('active'));
+    box.querySelectorAll('.panel').forEach(x=>x.classList.remove('active'));
+    btn.classList.add('active');box.querySelector('#tab-'+btn.dataset.tab).classList.add('active');
+  });
+  await staffBookings(); await staffProducts(); await staffUsers();
+}
+async function staffBookings(){
+  const all=await fetchBookings();
+  document.getElementById('tab-b').innerHTML=bookingTable(all,true);
+}
+async function staffProducts(){
+  const {data}=await supabase.from('products').select('*').order('created_at');
+  const list=data||[];
+  document.getElementById('tab-p').innerHTML=`
+    <p class="lead">Daftar produk (klik hapus untuk menghapus).</p>
+    <table class="tbl"><tr><th>Nama</th><th>Harga</th><th></th></tr>
+    ${list.map(p=>`<tr><td>${p.name}</td><td>Rp${Number(p.price).toLocaleString('id-ID')}</td><td><button class="btn btn-ghost" style="padding:5px 12px" onclick="delProduct('${p.id}')">Hapus</button></td></tr>`).join('')}
+    </table>
+    <form class="add-form" id="addProdForm">
+      <input class="full" placeholder="Nama produk" id="np_name" required>
+      <input placeholder="Harga (angka)" id="np_price" type="number" required>
+      <input placeholder="Emoji (mis. 🧴)" id="np_emoji">
+      <input class="full" placeholder="Deskripsi" id="np_desc">
+      <input placeholder="Badge (opsional)" id="np_badge">
+      <button type="submit" class="btn btn-primary full">Tambah Produk</button>
+    </form>`;
+  document.getElementById('addProdForm').onsubmit=async e=>{
+    e.preventDefault();
+    const {error}=await supabase.from('products').insert({name:np_name.value,price:+np_price.value,emoji:np_emoji.value,description:np_desc.value,badge:np_badge.value||null});
+    if(error){toast('Gagal: '+error.message);}else{toast('✓ Produk ditambah');await staffProducts();loadProducts();}
+  };
+}
+async function staffUsers(){
+  const users=await fetchProfiles();
+  document.getElementById('tab-u').innerHTML=`
+    <p class="lead">Daftar user & role (developer/admin bisa mengubah).</p>
+    <table class="tbl"><tr><th>Nama</th><th>Email</th><th>Role</th></tr>
+    ${users.map(u=>`<tr><td>${u.full_name||'-'}</td><td>${u.id}</td>
+      <td><select class="status-sel" onchange="setRole('${u.id}',this.value)">
+        ${['customer','barber','admin','developer'].map(r=>`<option value="${r}" ${u.role===r?'selected':''}>${r}</option>`).join('')}
+      </select></td></tr>`).join('')}
+    </table>`;
+}
+async function setRole(id,role){const {error}=await supabase.from('profiles').update({role}).eq('id',id);toast(error?('Gagal: '+error.message):'✓ Role diubah');}
+async function delProduct(id){if(!confirm('Hapus produk ini?'))return;const {error}=await supabase.from('products').delete().eq('id',id);if(error)toast('Gagal: '+error.message);else{toast('✓ Dihapus');await staffProducts();loadProducts();}}
+
+function bookingTable(rows,staff){
+  if(!rows.length)return '<p class="empty">Belum ada booking.</p>';
+  const head=`<tr><th>Nama</th><th>Layanan</th><th>Tanggal</th><th>Jam</th>${staff?'<th>User</th>':''}<th>Status</th></tr>`;
+  const body=rows.map(b=>{
+    const st=b.status||'pending';
+    const statusCell=staff
+      ?`<select class="status-sel" onchange="setStatus('${b.id}',this.value)">${Object.keys(STATUS_LABEL).map(k=>`<option value="${k}" ${st===k?'selected':''}>${STATUS_LABEL[k]}</option>`).join('')}</select>`
+      :`<span class="pill ${st}">${STATUS_LABEL[st]}</span>`;
+    return `<tr><td>${b.name||'-'}</td><td>${b.service||'-'}</td><td>${b.booking_date||'-'}</td><td>${b.booking_time||'-'}</td>${staff?`<td style="font-size:11px;color:var(--text-3)">${(b.user_id||'').slice(0,8)}</td>`:''}<td>${statusCell}</td></tr>`;
+  }).join('');
+  return `<table class="tbl">${head}${body}</table>`;
+}
+async function setStatus(id,status){const {error}=await supabase.from('bookings').update({status}).eq('id',id);toast(error?('Gagal: '+error.message):'✓ Status diupdate');}
+
+/* init */
+loadProducts();
+if(!CONFIGURED)toast('Demo: isi SUPABASE_URL & KEY untuk aktifkan login.');
+</script>
+</body>
+</html>
