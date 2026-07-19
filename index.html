@@ -474,16 +474,7 @@ body.anim .reveal.in{opacity:1;transform:none}
     <div class="eyebrow reveal">Galeri</div>
     <h2 class="title reveal">Hasil cukur terbaru.</h2>
     <p class="lead reveal">Beberapa look yang keluar dari kursi Anam.</p>
-    <div class="gal-grid">
-      <div class="gal reveal"><span class="tag">FADE · 2026</span></div>
-      <div class="gal reveal"><span class="tag">POMPADOUR</span></div>
-      <div class="gal reveal"><span class="tag">TEXTURED</span></div>
-      <div class="gal reveal"><span class="tag">BEARD LINE</span></div>
-      <div class="gal reveal"><span class="tag">BUZZ CUT</span></div>
-      <div class="gal reveal"><span class="tag">MID FADE</span></div>
-      <div class="gal reveal"><span class="tag">QUIFF</span></div>
-      <div class="gal reveal"><span class="tag">SKIN FADE</span></div>
-    </div>
+    <div class="gal-grid" id="galGrid"><p class="empty">Memuat…</p></div>
   </section>
 
   <!-- TENTANG -->
@@ -1009,17 +1000,19 @@ async function renderStaffDash(box){
     <div class="dash-tabs">
       <button class="active" data-tab="b">Kelola Booking</button>
       <button data-tab="p">Kelola Produk</button>
+      <button data-tab="g">Kelola Galeri</button>
       <button data-tab="u">Kelola User</button>
     </div>
     <div class="panel active" id="tab-b"></div>
     <div class="panel" id="tab-p"></div>
+    <div class="panel" id="tab-g"></div>
     <div class="panel" id="tab-u"></div>`;
   box.querySelectorAll('.dash-tabs button').forEach(btn=>btn.onclick=()=>{
     box.querySelectorAll('.dash-tabs button').forEach(x=>x.classList.remove('active'));
     box.querySelectorAll('.panel').forEach(x=>x.classList.remove('active'));
     btn.classList.add('active');box.querySelector('#tab-'+btn.dataset.tab).classList.add('active');
   });
-  await staffBookings(); await staffProducts(); await staffUsers();
+  await staffBookings(); await staffProducts(); await staffGallery(); await staffUsers();
 }
 async function staffBookings(){
   document.getElementById('tab-b').innerHTML = skelLine('40%') + skelLine('90%') + skelLine('80%');
@@ -1048,6 +1041,57 @@ async function staffProducts(){
     const {error}=await supabase.from('products').insert({name:np_name.value,price:+np_price.value,emoji:np_emoji.value,description:np_desc.value,badge:np_badge.value||null});
     if(error)toast('Gagal: '+error.message,'error'); else{toast('✓ Produk ditambah','success');await staffProducts();loadProducts();}
   };
+}
+async function staffGallery(){
+  const el=document.getElementById('tab-g');
+  if(!el) return;
+  el.innerHTML = skelLine('50%') + skelLine('80%');
+  const {data}=await supabase.from('gallery').select('*').order('sort_order',{ascending:true}).order('created_at',{ascending:false});
+  const list=data||[];
+  el.innerHTML=`
+    <p class="lead">Upload foto hasil cukur. Pilih file → isi caption → Simpan.</p>
+    <form class="add-form" id="addGalForm" style="display:grid;grid-template-columns:1fr;gap:12px">
+      <input type="file" id="gal_file" accept="image/*" required style="background:var(--bg-elev);border:1px solid var(--ring);border-radius:var(--r-sm);padding:10px;color:var(--text);font-family:inherit">
+      <input placeholder="Caption (mis. Skin Fade · 2026)" id="gal_caption" style="background:var(--frost-2);border:1px solid var(--ring);border-radius:var(--r-sm);padding:10px;color:var(--text);font-family:inherit">
+      <button type="submit" class="btn btn-primary">Upload Foto</button>
+    </form>
+    <div class="gal-grid" style="margin-top:24px">
+      ${list.length?list.map(g=>`
+        <div class="gal" style="aspect-ratio:1;background:url('${g.image_url}') center/cover">
+          <button class="btn btn-ghost" style="position:absolute;top:8px;right:8px;padding:4px 10px;font-size:11px;background:rgba(0,0,0,.7);color:#fff;border-color:rgba(255,255,255,.3)" onclick="delGallery('${g.id}','${g.image_url.split('/').pop()}')">Hapus</button>
+          ${g.caption?`<span class="tag" style="position:absolute;bottom:8px;left:8px;background:rgba(0,0,0,.6);padding:3px 8px;border-radius:4px">${g.caption}</span>`:''}
+        </div>`).join(''):'<p class="empty">Belum ada foto. Upload pertama kamu.</p>'}
+    </div>`;
+  document.getElementById('addGalForm').onsubmit=async e=>{
+    e.preventDefault();
+    const f=gal_file.files[0]; if(!f) return;
+    if(f.size>5*1024*1024){toast('File kebesaran (maks 5MB).','error');return;}
+    const ext=f.name.split('.').pop().toLowerCase();
+    const path='gallery/'+Date.now()+'-'+Math.random().toString(36).slice(2,8)+'.'+ext;
+    const up=await supabase.storage.from('gallery').upload(path,f,{cacheControl:'3600',upsert:false});
+    if(up.error){toast('Upload gagal: '+up.error.message,'error');return;}
+    const url=supabase.storage.from('gallery').getPublicUrl(path).data.publicUrl;
+    const ins=await supabase.from('gallery').insert({image_url:url,caption:gal_caption.value||''});
+    if(ins.error)toast('Gagal simpan: '+ins.error.message,'error');
+    else{toast('✓ Foto ditambah','success');await staffGallery();loadGallery();}
+  };
+}
+async function delGallery(id,filename){
+  if(!confirm('Hapus foto ini?')) return;
+  if(filename) await supabase.storage.from('gallery').remove([filename]);
+  const {error}=await supabase.from('gallery').delete().eq('id',id);
+  if(error)toast('Gagal: '+error.message,'error');
+  else{toast('✓ Foto dihapus','success');await staffGallery();loadGallery();}
+}
+async function loadGallery(){
+  if(!SB_READY) return;
+  const {data}=await supabase.from('gallery').select('*').order('sort_order',{ascending:true}).order('created_at',{ascending:false});
+  const grid=document.getElementById('galGrid'); if(!grid) return;
+  const list=data||[];
+  grid.innerHTML = list.length ? list.map(g=>`
+    <div class="gal reveal" style="background:url('${g.image_url}') center/cover">
+      ${g.caption?`<span class="tag" style="position:absolute;bottom:8px;left:8px;background:rgba(0,0,0,.65);padding:4px 10px;border-radius:var(--r-sm)">${g.caption}</span>`:''}
+    </div>`).join('') : '<p class="empty">Galeri kosong.</p>';
 }
 async function staffUsers(){
   document.getElementById('tab-u').innerHTML = skelLine('50%') + skelLine('80%');
@@ -1141,7 +1185,7 @@ function startAuth(){
     } else { currentUser=null; currentProfile=null; renderAuth(); }
     refreshLive();
   });
-  loadProducts(); setupRealtime();
+  loadProducts(); loadGallery(); setupRealtime();
 }
 
 /* ============================================================
@@ -1150,6 +1194,7 @@ function startAuth(){
 initTheme();
 startReveal();
 loadProducts();
+loadGallery();
 initLiveBooking();
 
 if(CONFIGURED){
