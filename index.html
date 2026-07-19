@@ -1211,7 +1211,13 @@ if(CONFIGURED){
     ];
     let i=0; (function next(){
       if(initSupabase()) return startAuth();
-      if(i>=cdns.length){ renderAuth(); toast('Mode demo: koneksi Supabase belum tersambung.','error'); return; }
+      if(i>=cdns.length){
+        renderAuth();
+        toast('Koneksi Supabase belum tersambung. Muat ulang halaman.','error');
+        // ponytail: safety-net — force reload setelah 4s kalau SW serve cache lama
+        setTimeout(()=>{ if(!SB_READY && !window.__sbReload){ window.__sbReload=1; location.reload(true); } }, 4000);
+        return;
+      }
       const s=document.createElement('script'); s.src=cdns[i++];
       s.async=true;
       s.onload=()=>{ initSupabase()?startAuth():next(); };
