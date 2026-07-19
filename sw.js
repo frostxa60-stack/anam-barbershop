@@ -4,7 +4,7 @@
    - Network-first untuk API Supabase (gak boleh stale)
    - Fallback: index.html saat offline
    ============================================================ */
-const CACHE = 'anam-v2';
+const CACHE = 'anam-v3';
 const CORE = [
   './',
   './index.html',
