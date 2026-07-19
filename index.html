@@ -31,12 +31,12 @@
   --bg:#f5f4ed; --bg-elev:#faf9f5; --bg-elev2:#ebe8df;
   --text:#141413; --text-2:#5e5d59; --text-3:#87867f;
   --accent:#b8761e; --accent-2:#8a5a16; --accent-glow:rgba(184,118,30,.2);
-  --frost:rgba(20,20,19,.1); --frost-2:rgba(20,20,19,.05);
-  --ring:#e8e6dc;
+  --frost:rgba(20,20,19,.12); --frost-2:rgba(20,20,19,.06);
+  --ring:#dfdcd3;
   --skel:rgba(0,0,0,.06); --skel-2:rgba(0,0,0,.12);
-  --shadow:rgba(0,0,0,.12);
-  --t-rim:rgba(20,20,19,.12);
-  --warm-haze:rgba(92,88,85,.1);
+  --shadow:rgba(0,0,0,.08);
+  --t-rim:rgba(20,20,19,.15);
+  --warm-haze:rgba(92,88,85,.08);
 }
 :root{
   --r-sm:8px; --r-md:12px; --r-lg:18px; --r-pill:100px;
@@ -238,7 +238,9 @@ footer{border-top:1px solid var(--ring);padding:38px 0;margin-top:40px}
 .pill.pending{background:rgba(232,177,94,.18);color:var(--accent)}
 .pill.confirmed{background:rgba(34,197,94,.18);color:#4ade80}
 .pill.done{background:rgba(255,255,255,.12);color:var(--text)}
+[data-theme="light"] .pill.done{background:rgba(20,20,19,.08);color:var(--text)}
 .pill.cancelled{background:rgba(239,68,68,.18);color:#f87171}
+[data-theme="light"] .pill.cancelled{background:rgba(239,68,68,.12);color:#dc2626}
 .empty{color:var(--text-2);font-size:14px;padding:20px 0}
 .add-form{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-top:16px;background:var(--frost-2);border:1px solid var(--ring);border-radius:var(--r-md);padding:18px}
 .add-form input,.add-form select{background:var(--bg-elev);color:var(--text);border:1px solid var(--ring);border-radius:var(--r-sm);padding:10px;font-family:inherit;font-size:14px}
@@ -339,7 +341,7 @@ body.anim .reveal.in{opacity:1;transform:none}
 <!-- NAV -->
 <header class="nav" id="nav">
   <div class="nav-inner">
-    <div class="logo"><span class="mark">✂</span>ANAM<span>.</span></div>
+    <div class="logo"><span class="mark"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="6" cy="6" r="3"/><circle cx="6" cy="18" r="3"/><path d="M8.5 8.5 20 18M8.5 15.5 20 6"/></svg></span>ANAM<span>.</span></div>
     <nav class="nav-links" id="navLinks">
       <a href="#layanan">Layanan</a>
       <a href="#booking">Booking</a>
